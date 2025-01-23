@@ -1,9 +1,7 @@
 ---@class List
 local list = {}
 list.__index = list
-
 list.count = -1
-
 
 ---@param array table? table used as an array
 ---@return List
@@ -83,19 +81,18 @@ function list:remove_range(starting_index, number_of_elements)
         return
     end
 
-    local range_end_index = starting_index + number_of_elements
+    local range_end_index = starting_index + number_of_elements - 1
     local number_of_leftover_values = self.count - range_end_index
-    if number_of_leftover_values >= 0 then
+    if number_of_leftover_values > 0 then
         for index_offset = 0, number_of_leftover_values, 1 do
-            self[starting_index + index_offset] = self[range_end_index + index_offset]
+            self[starting_index + index_offset] = self[range_end_index + index_offset + 1]
         end
 
-        starting_index = range_end_index + 1
-        number_of_elements = number_of_leftover_values
+        starting_index = starting_index + number_of_leftover_values
     end
-    print("start:"..starting_index, "steps:"..number_of_elements)
-    for index_offset = 0, number_of_elements - 1, 1 do
-        self[starting_index + index_offset] = nil
+
+    for index = starting_index, self.count, 1 do
+        self[index] = nil
     end
 
     self.count = self.count - number_of_elements
@@ -108,14 +105,4 @@ function list:clear()
 
     self.count = 0
 end
-
-local arr = {3, 2, 1}
-local lt = list.new(arr)
---lt:add_range(arr)
-lt:remove_range(1, 2)
-for index, value in ipairs(lt) do
-    print("["..index.."] "..value)
-end
-
-print("Count: "..lt.count)
 
